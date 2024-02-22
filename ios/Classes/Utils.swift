@@ -74,7 +74,7 @@ public extension RangeReplaceableCollection where Iterator.Element: ExpressibleB
     }
 }
 
-enum ReleaseMode : Int{
+enum FinishMode : Int{
     case release = 0
     case loop = 1
     case pause = 2

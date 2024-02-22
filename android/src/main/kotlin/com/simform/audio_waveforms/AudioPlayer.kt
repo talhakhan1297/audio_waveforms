@@ -10,9 +10,9 @@ import com.google.android.exoplayer2.Player
 import io.flutter.plugin.common.MethodChannel
 
 class AudioPlayer(
-    context: Context,
-    channel: MethodChannel,
-    playerKey: String
+        context: Context,
+        channel: MethodChannel,
+        playerKey: String
 ) {
     private var handler: Handler = Handler(Looper.getMainLooper())
     private var runnable: Runnable? = null
@@ -21,15 +21,15 @@ class AudioPlayer(
     private var player: ExoPlayer? = null
     private var playerListener: Player.Listener? = null
     private var isPlayerPrepared: Boolean = false
-    private var releaseMode = ReleaseMode.Release
+    private var finishMode = FinishMode.Release
     private var key = playerKey
     private var updateFrequency:Long = 200
 
     fun preparePlayer(
-        result: MethodChannel.Result,
-        path: String?,
-        volume: Float?,
-        frequency: Long?,
+            result: MethodChannel.Result,
+            path: String?,
+            volume: Float?,
+            frequency: Long?,
     ) {
         if (path != null) {
             frequency?.let {
@@ -51,20 +51,22 @@ class AudioPlayer(
                     }
                     if (state == Player.STATE_ENDED) {
                         val args: MutableMap<String, Any?> = HashMap()
-                        when(releaseMode){
-                            ReleaseMode.Release -> {
+                        when (finishMode) {
+                            FinishMode.Release -> {
                                 player?.stop()
                                 player?.release()
                                 player = null
                                 stopListening()
                                 args[Constants.releaseType] = 0
                             }
-                            ReleaseMode.Loop -> {
+
+                            FinishMode.Loop -> {
                                 player?.seekTo(0)
                                 player?.play()
                                 args[Constants.releaseType] = 1
                             }
-                            ReleaseMode.Pause -> {
+
+                            FinishMode.Pause -> {
                                 player?.seekTo(0)
                                 player?.playWhenReady = false
                                 stopListening()
@@ -73,8 +75,8 @@ class AudioPlayer(
                         }
                         args[Constants.playerKey] = key
                         methodChannel.invokeMethod(
-                            Constants.onDidFinishPlayingAudio,
-                            args
+                                Constants.onDidFinishPlayingAudio,
+                                args
                         )
                     }
                 }
@@ -177,24 +179,26 @@ class AudioPlayer(
         }
     }
 
-    fun setReleaseMode(result: MethodChannel.Result, releaseModeType : Int?){
-        try{
+    fun setReleaseMode(result: MethodChannel.Result, releaseModeType: Int?) {
+        try {
             releaseModeType?.let {
                 when (releaseModeType) {
                     0 -> {
-                        this.releaseMode = ReleaseMode.Release
+                        this.finishMode = FinishMode.Release
                     }
+
                     1 -> {
-                        this.releaseMode = ReleaseMode.Loop
+                        this.finishMode = FinishMode.Loop
                     }
+
                     else -> {
-                        this.releaseMode = ReleaseMode.Pause
+                        this.finishMode = FinishMode.Pause
                     }
                 }
             }
 
-        }catch (e:Exception){
-            result.error(Constants.LOG_TAG,"Can not set the release mode",e.toString())
+        } catch (e: Exception) {
+            result.error(Constants.LOG_TAG, "Can not set the release mode", e.toString())
         }
     }
 

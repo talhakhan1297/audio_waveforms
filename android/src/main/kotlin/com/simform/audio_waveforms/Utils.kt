@@ -80,7 +80,7 @@ enum class UpdateFrequency(val value:Long) {
     Low(200),
 }
 
-enum class ReleaseMode(val value: Int){
+enum class FinishMode(val value: Int){
     Release(0),
     Loop(1),
     Pause(2)

@@ -175,9 +175,9 @@ class AudioWaveformsInterface {
   }
   
   /// Sets the release mode.
-  Future<void> setReleaseMode(String key,ReleaseMode releaseMode)async{
+  Future<void> setReleaseMode(String key,FinishMode finishMode)async{
     return await _methodChannel.invokeMethod(Constants.setReleaseMode,{
-      Constants.releaseType : releaseMode.index,
+      Constants.releaseType : finishMode.index,
       Constants.playerKey: key,
     });
   }
